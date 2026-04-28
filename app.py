@@ -21,6 +21,9 @@ app.secret_key = "secret123"  # wajib untuk session
 def index():
     return redirect(url_for("login"))
 
+@app.route("/ping")
+def ping():
+    return "OK"
 
 # =============================
 # LOGIN
