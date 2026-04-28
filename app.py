@@ -6,6 +6,8 @@ from services.rule_based import filter_makanan_rule_based
 from models.food_model import get_all_makanan
 from models.food_model import get_makanan_by_id
 from services.cbf import cbf_ranking
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = "secret123"  # wajib untuk session
