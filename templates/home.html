@@ -1,0 +1,314 @@
+{% extends "base_main.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', Arial;
+    background: #eef0f2;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin: 40px 0;
+  }
+
+  /* KALORI CARD */
+  .calorie-card {
+    width: 70%;
+    margin: auto;
+    background: linear-gradient(90deg, #ff6a00, #ff2e2e);
+    color: white;
+    padding: 30px;
+    border-radius: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .calorie-value {
+    font-size: 32px;
+    font-weight: bold;
+  }
+
+  .icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 36px;
+  }
+
+  /* FORM CARD */
+  .card {
+    width: 70%;
+    margin: 30px auto;
+    background: #f5f5f5;
+    padding: 30px;
+    border-radius: 16px;
+  }
+
+  label {
+    font-weight: bold;
+  }
+
+  .search-box {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0 25px;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: #e5e5e5;
+  }
+
+  button {
+    padding: 12px 20px;
+    border: none;
+    background: #020617;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  /* SLIDER */
+  .range-wrapper {
+    position: relative;
+    margin: 25px 0;
+  }
+
+  .range-track {
+    height: 10px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    position: relative;
+  }
+
+  .range-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: #020617;
+    border-radius: 999px;
+    z-index: 2;
+  }
+
+  input[type=range] {
+    position: absolute;
+    width: 100%;
+    top: -6px;
+    background: none;
+    pointer-events: none;
+    appearance: none;
+    z-index: 3
+  }
+
+  input[type=range]:focus {
+    outline: none;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    /* WAJIB */
+    appearance: none;
+
+    pointer-events: auto;
+    width: 22px;
+    height: 22px;
+
+    background: #ffffff;
+    /* putih */
+    border: 2px solid #d1d5db;
+    /* abu soft */
+
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  input[type=range]::-webkit-slider-thumb:active {
+    box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+
+  .badge {
+    background: #f0e4d8;
+    padding: 10px 14px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+
+  .desc {
+    margin: 15px 0;
+    color: #666;
+  }
+
+  select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: none;
+    background: #e5e5e5;
+
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #2d3748;
+
+    appearance: none;
+    /* penting */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    cursor: pointer;
+
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M5 7l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+  }
+
+  select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 90, 0, 0.2);
+  }
+
+  select:invalid {
+    color: #888;
+  }
+</style>
+
+<div class="header">
+  <h2>Cari Rekomendasi Makanan</h2>
+  <p>Temukan makanan yang sesuai dengan kebutuhan kalori Anda</p>
+</div>
+
+<!-- KALORI -->
+<div class="calorie-card">
+  <div>
+    <div>Total Kebutuhan Kalori Harian</div>
+    <div class="calorie-value">{{ tee|round|int }} kkal</div>
+  </div>
+  <div class="icon">🔥</div>
+</div>
+
+<!-- FORM -->
+<form method="POST">
+  <div class="card">
+
+    <label>Makanan yang Anda Inginkan</label>
+    <div class="search-box">
+      <input type="text" name="query" placeholder="Cari makanan... (contoh: nasi goreng, ayam goreng)" required>
+      <button type="submit" id="btnCari">Cari</button>
+    </div>
+
+    <label>Persentase Kalori</label>
+
+    <div class="range-wrapper">
+      <div class="range-track">
+        <div class="range-fill" id="fill"></div>
+      </div>
+
+      <!-- SLIDER -->
+      <input type="range" id="minRange" min="0" max="100" step="5" value="20">
+      <input type="range" id="maxRange" min="0" max="100" step="5" value="80">
+
+      <!-- HIDDEN INPUT UNTUK BACKEND -->
+      <input type="hidden" name="min_kalori" id="minInput">
+      <input type="hidden" name="max_kalori" id="maxInput">
+    </div>
+
+    <div class="info">
+      <div class="badge" id="minText"></div>
+      <div class="badge" id="maxText"></div>
+    </div>
+
+    <div class="desc">
+      Atur rentang persentase kalori yang Anda butuhkan dari total kebutuhan harian
+    </div>
+
+    <label>Porsi</label>
+    <select name="porsi" required>
+      <option value="" disabled selected>-- Pilih porsi --</option>
+      <option value="1">1</option>
+      <option value="lebih">Lebih dari 1</option>
+    </select>
+
+  </div>
+</form>
+
+<script>
+  const minRange = document.getElementById("minRange");
+  const maxRange = document.getElementById("maxRange");
+  const fill = document.getElementById("fill");
+
+  const minText = document.getElementById("minText");
+  const maxText = document.getElementById("maxText");
+
+  const minInput = document.getElementById("minInput");
+  const maxInput = document.getElementById("maxInput");
+
+  const TOTAL = parseInt("{{ tee|default(0)|round|int }}");
+
+  function updateSlider() {
+    let min = parseInt(minRange.value);
+    let max = parseInt(maxRange.value);
+
+    if (min > max - 5) {
+      min = max - 5;
+      minRange.value = min;
+    }
+
+    if (max < min + 5) {
+      max = min + 5;
+      maxRange.value = max;
+    }
+
+    fill.style.left = min + "%";
+    fill.style.width = (max - min) + "%";
+
+    let minK = Math.round(min / 100 * TOTAL);
+    let maxK = Math.round(max / 100 * TOTAL);
+
+    minText.innerText = `Min: ${min}% (~${minK} kkal)`;
+    maxText.innerText = `Max: ${max}% (~${maxK} kkal)`;
+
+    // KIRIM KE BACKEND
+    minInput.value = min;
+    maxInput.value = max;
+  }
+
+  minRange.addEventListener("input", updateSlider);
+  maxRange.addEventListener("input", updateSlider);
+
+  updateSlider();
+
+  const form = document.querySelector("form");
+  const btn = document.getElementById("btnCari");
+
+  form.addEventListener("submit", function () {
+    btn.innerText = "Mencari...";
+    btn.disabled = true;
+  });
+</script>
+
+{% endblock %}

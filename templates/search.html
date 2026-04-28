@@ -1,0 +1,144 @@
+{% extends "base_main.html" %}
+
+{% block title %}Hasil Pencarian{% endblock %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', Arial;
+    background: #eef0f2;
+  }
+
+  /* CONTAINER */
+  .container {
+    width: 80%;
+    margin: 50px auto;
+  }
+
+  /* TITLE */
+  h1 {
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    color: #5f6c7b;
+    margin-bottom: 30px;
+    font-size: 16px;
+  }
+
+  .subtitle b {
+    color: #ff5a00;
+  }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 25px;
+  }
+
+  /* CARD */
+  .card {
+    background: #f5f5f5;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s;
+    text-decoration: none;
+    color: black;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+  }
+
+  /* IMAGE */
+  .card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+
+  /* CONTENT */
+  .card-body {
+    padding: 18px;
+  }
+
+  .title {
+    font-size: 18px;
+    margin-bottom: 12px;
+    font-weight: bold;
+  }
+
+  /* FOOTER */
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .kalori {
+    color: #ff5a00;
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  .porsi {
+    color: #666;
+    font-size: 14px;
+  }
+</style>
+
+<div class="container">
+
+  <!-- 🔥 HEADER CLEAN -->
+  <h1>Hasil Pencarian</h1>
+
+  <div class="subtitle">
+    Ditemukan <b>{{ hasil|length }}</b> makanan untuk "<b>{{ query }}</b>"
+    dengan
+    <b>
+      {% if porsi == "1" %}
+      1 porsi
+      {% else %}
+      lebih dari 1 porsi
+      {% endif %}
+    </b>
+  </div>
+
+  {% if hasil|length == 0 %}
+  <p>Tidak ada makanan yang sesuai 😢</p>
+  {% else %}
+
+  <div class="grid">
+
+    {% for m in hasil %}
+    <a href="/detail/{{ m.id }}" class="card">
+
+      <img src="{{ m.gambar }}" onerror="this.src='https://via.placeholder.com/300x200'">
+
+      <div class="card-body">
+        <div class="title">{{ m.nama_makanan }}</div>
+
+        <div class="card-footer">
+          <div class="kalori">{{ m.kalori }} kkal</div>
+          <div class="porsi">
+            {{ m.porsi }} porsi
+          </div>
+        </div>
+      </div>
+
+    </a>
+    {% endfor %}
+
+  </div>
+
+  {% endif %}
+
+</div>
+
+{% endblock %}

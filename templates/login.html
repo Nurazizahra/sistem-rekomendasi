@@ -1,0 +1,131 @@
+{% extends "base_auth.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  body {
+  margin: 0;
+  font-family: 'Poppins', Arial;
+  background: linear-gradient(
+    135deg,
+    #f5ebe6 0%,     /* cream terang (kiri atas) */
+    #e9ded7 40%,    /* transisi */
+    #e6d3d8 70%,    /* mulai pink */
+    #d9c7d0 100%    /* pink-ungu (kanan bawah) */
+  );
+  min-height: 100vh;
+}
+
+  .container {
+    width: 420px;
+    margin: 100px auto;
+    background: #f3f3f3;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+
+  h1 {
+    margin-bottom: 10px;
+    font-size: 28px;
+  }
+
+  .subtitle {
+    color: #666;
+    margin-bottom: 30px;
+  }
+
+  .form-group {
+    text-align: left;
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background: #e5e5e5;
+    font-size: 14px;
+  }
+
+  input::placeholder {
+    color: #888;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    background: #020617;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+
+  .btn:hover {
+    background: #111827;
+  }
+
+  .footer {
+    margin-top: 25px;
+    font-size: 14px;
+    color: #555;
+  }
+
+  .footer a {
+    color: #ff5a00;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .footer a:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<div class="container">
+  <h1>Sistem Rekomendasi Makanan</h1>
+  <div class="subtitle">Masuk ke akun Anda</div>
+
+  {% if message %}
+  <script>
+      alert("{{ message }}");
+  </script>
+  {% endif %}
+
+  <form method="POST">
+
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" name="username" placeholder="Masukkan username" required>
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" name="password" placeholder="Masukkan password" required>
+    </div>
+
+    <button type="submit" class="btn">Masuk</button>
+
+  </form>
+
+  <div class="footer">
+    Belum punya akun? <a href="/register">Daftar Sekarang</a>
+  </div>
+</div>
+
+{% endblock %}

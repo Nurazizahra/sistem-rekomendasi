@@ -1,0 +1,129 @@
+<!-- GOOGLE FONT -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* NAVBAR */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 60px;
+  background: #f5f5f5;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* LOGO */
+.logo {
+  font-size: 22px;
+  font-weight: 600;
+  color: #ff5a00;
+  text-decoration: none;
+}
+
+/* RIGHT SIDE */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+/* USER BADGE */
+.user-name {
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #f1f1f1, #e5e5e5);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* DOT STATUS */
+.dot {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+}
+
+/* MENU */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #2d3748;
+  font-size: 15px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.nav-item:hover {
+  color: #ff5a00;
+}
+
+/* ICON */
+.nav-icon {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+}
+
+hr {
+  display: none;
+}
+</style>
+
+<div class="navbar">
+
+  <!-- LOGO -->
+  <a href="/home" class="logo">Rekomendasi Makanan</a>
+
+  <div class="nav-right">
+
+    <!-- USER -->
+    <div class="user-name">
+      <span class="dot"></span>
+      Halo, {{ user.username }}
+    </div>
+
+    <!-- HOME -->
+    <a href="/home" class="nav-item">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke-width="2">
+        <path d="M3 10l9-7 9 7"></path>
+        <path d="M9 21V12h6v9"></path>
+      </svg>
+      Home
+    </a>
+
+    <!-- EDIT PROFIL -->
+    <a href="/profile" class="nav-item">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke-width="2">
+        <circle cx="12" cy="7" r="4"></circle>
+        <path d="M5.5 21a6.5 6.5 0 0113 0"></path>
+      </svg>
+      Edit Profil
+    </a>
+
+    <!-- LOGOUT -->
+    <a href="/logout" class="nav-item">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke-width="2">
+        <path d="M10 17l5-5-5-5"></path>
+        <path d="M15 12H3"></path>
+        <path d="M21 3v18"></path>
+      </svg>
+      Logout
+    </a>
+
+  </div>
+</div>

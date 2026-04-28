@@ -1,0 +1,255 @@
+{% extends "base_auth.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', Arial;
+    background: linear-gradient(135deg,
+        #f5ebe6 0%,
+        /* cream terang (kiri atas) */
+        #e9ded7 40%,
+        /* transisi */
+        #e6d3d8 70%,
+        /* mulai pink */
+        #d9c7d0 100%
+        /* pink-ungu (kanan bawah) */
+      );
+    min-height: 100vh;
+  }
+
+  .container {
+    width: 900px;
+    margin: 60px auto;
+    background: #f3f3f3;
+    padding: 40px 50px;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 30px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .full {
+    grid-column: span 2;
+  }
+
+  label {
+    margin-bottom: 6px;
+    font-weight: bold;
+  }
+
+  input,
+  select {
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: none;
+    background: #e5e5e5;
+    font-size: 14px;
+    outline: none;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  select {
+    cursor: pointer;
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    border-radius: 14px;
+
+    /* arrow custom */
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M5 7l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 16px;
+
+    /* efek lembut */
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  input:focus,
+  select:focus {
+    box-shadow: 0 0 0 2px rgba(180, 180, 180, 0.4);
+  }
+
+  select:hover {
+    background-color: #dddddd;
+  }
+
+  input::placeholder {
+    color: #888;
+  }
+
+  select {
+    color: #555;
+  }
+
+  .btn {
+    margin-top: 25px;
+    width: 100%;
+    padding: 14px;
+    background: #020617;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .btn:hover {
+    background: #111827;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 25px;
+    color: #555;
+  }
+
+  .footer a {
+    color: #ff5a00;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .footer a:hover {
+    text-decoration: underline;
+  }
+
+  #error_password {
+    font-size: 13px;
+    margin-top: 5px;
+  }
+</style>
+
+<div class="container">
+  <h1>Daftar Akun Baru</h1>
+  <div class="subtitle">Lengkapi data diri Anda</div>
+
+  {% if message %}
+  <script>
+    alert("{{ message }}");
+
+    var success = "{{ success }}";
+
+    if (success === "True") {
+      window.location.href = "/login";
+    }
+  </script>
+  {% endif %}
+
+  <form method="POST">
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" name="username" placeholder="Pilih username" required>
+      </div>
+
+      <div class="form-group">
+        <label>Usia</label>
+        <input type="number" name="usia" placeholder="Masukkan usia" required>
+      </div>
+
+      <div class="form-group">
+        <label>Jenis Kelamin</label>
+        <select name="jenis_kelamin" required>
+          <option value="" disabled selected>-- Pilih jenis kelamin --</option>
+          <option value="laki-laki">Laki-laki</option>
+          <option value="perempuan">Perempuan</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Berat Badan (kg)</label>
+        <input type="number" name="berat" placeholder="Masukkan berat badan" required>
+      </div>
+
+      <div class="form-group">
+        <label>Tinggi Badan (cm)</label>
+        <input type="number" name="tinggi" placeholder="Masukkan tinggi badan" required>
+      </div>
+
+      <div class="form-group">
+        <label>Aktivitas Harian</label>
+        <select name="aktivitas" required>
+          <option value="" disabled selected>-- Pilih aktivitas --</option>
+          <option value="sedentary">Sedentary or Light Activity</option>
+          <option value="active">Active or Moderately Active</option>
+          <option value="vigorous">Vigorous or Vigorously Active</option>
+        </select>
+      </div>
+
+      <div class="form-group full">
+        <label>Alergi</label>
+        <input type="text" name="alergi" placeholder="Masukkan alergi makanan (Opsional)">
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="new_password" name="password" placeholder="Buat password" required>
+      </div>
+
+      <div class="form-group">
+        <label>Konfirmasi Password</label>
+        <input type="password" id="confirm_password" name="confirm_password" placeholder="Ulangi password"
+          onkeyup="cekPassword()" required>
+        <p id="error_password" style="color:red;"></p>
+      </div>
+
+    </div>
+
+    <button type="submit" class="btn">Register</button>
+  </form>
+
+  <div class="footer">
+    Sudah punya akun? <a href="/login">Login</a>
+  </div>
+</div>
+
+<script>
+  function cekPassword() {
+    var pass1 = document.getElementById("new_password").value;
+    var pass2 = document.getElementById("confirm_password").value;
+    var error = document.getElementById("error_password");
+
+    if (pass2.length === 0) {
+      error.innerHTML = "";
+      return;
+    }
+
+    if (pass1 !== pass2) {
+      error.innerHTML = "Password tidak cocok";
+    } else {
+      error.innerHTML = "";
+    }
+  }
+</script>
+
+{% endblock %}
