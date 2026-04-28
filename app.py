@@ -6,7 +6,6 @@ from services.kalori import hitung_kebutuhan_energi
 from services.rule_based import filter_makanan_rule_based
 from models.food_model import get_all_makanan
 from models.food_model import get_makanan_by_id
-from services.cbf import cbf_ranking
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -156,7 +155,9 @@ def home():
 # =============================
 @app.route("/search")
 def search():
-
+    # 🔥 import di sini (lazy import)
+    from services.cbf import cbf_ranking
+    
     # =============================
     # CEK LOGIN
     # =============================

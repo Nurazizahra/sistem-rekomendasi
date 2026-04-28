@@ -1,9 +1,5 @@
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-
-
 # =============================
-# PREPROCESS QUERY SAJA
+# PREPROCESS QUERY
 # =============================
 def preprocess_query(text):
     text = text.lower()
@@ -24,6 +20,10 @@ def preprocess_query(text):
 # =============================
 def cbf_ranking(query, data_makanan, top_n=5):
 
+    # 🔥 LAZY IMPORT (PENTING UNTUK RAILWAY)
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics.pairwise import cosine_similarity
+
     # =============================
     # VALIDASI
     # =============================
@@ -36,13 +36,13 @@ def cbf_ranking(query, data_makanan, top_n=5):
     query = preprocess_query(query)
 
     # =============================
-    # AMBIL DOKUMEN (hindari kosong)
+    # AMBIL DOKUMEN
     # =============================
     dokumen_list = [
-        m.get("dokumen", "") or "" for m in data_makanan
+        (m.get("dokumen") or "") for m in data_makanan
     ]
 
-    # tambahkan query
+    # tambahkan query di akhir
     dokumen_list.append(query)
 
     # =============================
@@ -77,7 +77,7 @@ def cbf_ranking(query, data_makanan, top_n=5):
     )
 
     # =============================
-    # FILTER NILAI 0 (opsional)
+    # FILTER (optional tapi bagus)
     # =============================
     hasil = [m for m in hasil if m["similarity"] > 0]
 
