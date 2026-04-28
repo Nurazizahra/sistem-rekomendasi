@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from models.user_model import insert_user, get_user_by_username, update_user
@@ -345,3 +346,6 @@ def logout():
 # =============================
 if __name__ == "__main__":
     app.run(debug=True)
+    
+port = int(os.environ.get("PORT", 5000))
+app.run(host="0.0.0.0", port=port)
