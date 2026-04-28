@@ -1,9 +1,5 @@
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-
-
 # =============================
-# PREPROCESS QUERY SAJA
+# PREPROCESS QUERY
 # =============================
 def preprocess_query(text):
     text = text.lower()
@@ -24,6 +20,10 @@ def preprocess_query(text):
 # =============================
 def cbf_ranking(query, data_makanan, top_n=5):
 
+    # 🔥 lazy import (penting untuk Railway)
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics.pairwise import cosine_similarity
+
     # =============================
     # VALIDASI
     # =============================
@@ -36,19 +36,23 @@ def cbf_ranking(query, data_makanan, top_n=5):
     query = preprocess_query(query)
 
     # =============================
-    # AMBIL DOKUMEN (hindari kosong)
+    # AMBIL DOKUMEN
     # =============================
     dokumen_list = [
-        m.get("dokumen", "") or "" for m in data_makanan
+        (m.get("dokumen") or "") for m in data_makanan
     ]
 
-    # tambahkan query
+    # tambahkan query di akhir
     dokumen_list.append(query)
 
     # =============================
     # TF-IDF + BIGRAM
     # =============================
-    vectorizer = TfidfVectorizer(ngram_range=(1, 2))
+    vectorizer = TfidfVectorizer(
+        ngram_range=(1, 2),
+        max_features=5000
+    )
+
     tfidf_matrix = vectorizer.fit_transform(dokumen_list)
 
     # =============================
@@ -77,11 +81,18 @@ def cbf_ranking(query, data_makanan, top_n=5):
     )
 
     # =============================
-    # FILTER NILAI 0 (opsional)
+    # FILTER DENGAN THRESHOLD
     # =============================
-    hasil = [m for m in hasil if m["similarity"] > 0]
+    threshold = 0.05
+    hasil_filtered = [
+        m for m in hasil if m["similarity"] >= threshold
+    ]
 
     # =============================
-    # TOP N
+    # STRATEGI OUTPUT
     # =============================
-    return hasil[:top_n]
+    if hasil_filtered:
+        return hasil_filtered[:top_n]
+    else:
+        # fallback → tetap tampilkan top result
+        return hasil[:top_n]
