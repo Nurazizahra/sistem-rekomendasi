@@ -7,124 +7,197 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-body {
-  margin: 0;
-  font-family: 'Poppins', Arial;
-  background: #eef0f2;
-}
+  body {
+    margin: 0;
+    font-family: 'Poppins', Arial;
+    background: #eef0f2;
+  }
 
-/* CONTAINER */
-.container {
-  width: 900px;
-  margin: 60px auto;
-  background: #f5f5f5;
-  padding: 40px 50px;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-}
+  .container {
+    width: 900px;
+    margin: 60px auto;
+    background: #f5f5f5;
+    padding: 40px 50px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  }
 
-/* TITLE */
-h1 {
-  margin-bottom: 10px;
-}
+  /* TITLE */
+  h1 {
+    margin-bottom: 10px;
+  }
 
-.subtitle {
-  color: #666;
-  margin-bottom: 30px;
-}
+  .subtitle {
+    color: #666;
+    margin-bottom: 30px;
+  }
 
-/* GRID */
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px 30px;
-}
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 30px;
+  }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
 
-.full {
-  grid-column: span 2;
-}
+  .full {
+    grid-column: span 2;
+  }
 
-/* INPUT */
-label {
-  margin-bottom: 6px;
-  font-weight: bold;
-}
+  input[readonly] {
+    background: #ddd;
+    cursor: not-allowed;
+  }
 
-input, select {
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: none;
-  background: #e5e5e5;
-  font-size: 14px;
-  outline: none;
-  font-family: 'Poppins', sans-serif;
-}
+  /* INPUT */
+  label {
+    margin-bottom: 6px;
+    font-weight: bold;
+  }
 
-select {
-  padding: 12px 14px;
-  border-radius: 14px;
-  cursor: pointer;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+  .label-with-tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
 
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  .info-icon {
+    width: 18px;
+    height: 18px;
+    background: #e5e5e5;
+    color: #333;
+    border-radius: 50%;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
 
-  /* panah custom */
-  background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M5 7l5 5 5-5z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 16px;
-}
+  .tooltip {
+    position: absolute;
+    top: 36px;
+    left: 0;
 
-select:focus,
-input:focus {
-  box-shadow: 0 0 0 2px rgba(180, 180, 180, 0.4);
-}
+    width: 380px;
+    max-width: 420px;
 
-input::placeholder {
-  color: #888;
-}
+    padding: 16px 18px;
 
-/* BUTTON */
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 30px;
-  gap: 20px;
-}
+    background: #020617;
+    color: #fff;
 
-.btn {
-  flex: 1;
-  padding: 14px;
-  border-radius: 12px;
-  font-size: 16px;
-  cursor: pointer;
-  border: none;
-}
+    border-radius: 14px;
+    font-size: 13px;
+    line-height: 1.6;
 
-.btn-cancel {
-  background: #e5e5e5;
-}
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 
-.btn-save {
-  background: #020617;
-  color: white;
-}
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition: 0.25s ease;
+    z-index: 99;
 
-.btn-save:hover {
-  background: #111827;
-}
+    text-align: justify;
+  }
 
-#error_password {
-  font-size: 13px;
-  margin-top: 5px;
-}
+  .tooltip::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 20px;
+
+    width: 12px;
+    height: 12px;
+    background: #020617;
+    transform: rotate(45deg);
+  }
+
+  .label-with-tooltip:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .tooltip b {
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  input,
+  select {
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: none;
+    background: #e5e5e5;
+    font-size: 14px;
+    outline: none;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  select {
+    padding: 12px 14px;
+    border-radius: 14px;
+    cursor: pointer;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M5 7l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+  }
+
+  select:focus,
+  input:focus {
+    box-shadow: 0 0 0 2px rgba(180, 180, 180, 0.4);
+  }
+
+  input::placeholder {
+    color: #888;
+  }
+
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    gap: 20px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-cancel {
+    background: #e5e5e5;
+  }
+
+  .btn-save {
+    background: #020617;
+    color: white;
+  }
+
+  .btn-save:hover {
+    background: #111827;
+  }
+
+  #error_password {
+    font-size: 13px;
+    margin-top: 5px;
+  }
 </style>
 
 <div class="container">
@@ -134,7 +207,7 @@ input::placeholder {
 
   {% if message %}
   <script>
-      alert("{{ message }}");
+    alert("{{ message }}");
   </script>
   {% endif %}
 
@@ -145,6 +218,12 @@ input::placeholder {
       <div class="form-group">
         <label>Usia</label>
         <input type="number" name="usia" value="{{ user.usia }}">
+      </div>
+
+      <!-- Jenis Kelamin (READ ONLY) -->
+      <div class="form-group">
+        <label>Jenis Kelamin</label>
+        <input type="text" value="{{ user.jenis_kelamin }}" readonly>
       </div>
 
       <!-- Berat -->
@@ -161,16 +240,35 @@ input::placeholder {
 
       <!-- Aktivitas -->
       <div class="form-group">
-        <label>Aktivitas Harian</label>
+        <label class="label-with-tooltip">
+          Aktivitas Harian
+          <span class="info-icon">?</span>
+
+          <div class="tooltip">
+            <b>Sedentary / Light Activity</b>
+            Aktivitas ringan, jarang olahraga, lebih banyak duduk atau berdiri (contoh: kerja kantor)
+            <br><br>
+
+            <b>Active / Moderately Active</b>
+            Aktivitas sedang, kadang olahraga rutin atau pekerjaan cukup aktif (contoh: jogging, bersepeda)
+            <br><br>
+
+            <b>Vigorous / Vigorously Active</b>
+            Aktivitas berat setiap hari, pekerjaan fisik atau olahraga intens (contoh: buruh, atlet, kerja lapangan)
+          </div>
+        </label>
         <select name="aktivitas">
-          <option value="sedentary" {% if user.aktivitas_harian == "sedentary" %}selected{% endif %}>Sedentary or Light Activity</option>
-          <option value="active" {% if user.aktivitas_harian == "active" %}selected{% endif %}>Active or Moderately Active</option>
-          <option value="vigorous" {% if user.aktivitas_harian == "vigorous" %}selected{% endif %}>Vigorous or Vigorously Active</option>
+          <option value="sedentary" {% if user.aktivitas_harian=="sedentary" %}selected{% endif %}>Sedentary or Light
+            Activity</option>
+          <option value="active" {% if user.aktivitas_harian=="active" %}selected{% endif %}>Active or Moderately Active
+          </option>
+          <option value="vigorous" {% if user.aktivitas_harian=="vigorous" %}selected{% endif %}>Vigorous or Vigorously
+            Active</option>
         </select>
       </div>
 
       <!-- Alergi -->
-      <div class="form-group full">
+      <div class="form-group">
         <label>Alergi</label>
         <input type="text" name="alergi" value="{{ user.alergi }}">
       </div>
@@ -184,13 +282,15 @@ input::placeholder {
       <!-- Password Baru -->
       <div class="form-group">
         <label>Password Baru (Opsional)</label>
-        <input type="password" id="new_password" name="new_password" placeholder="Kosongkan jika tidak ingin mengubah password">
+        <input type="password" id="new_password" name="new_password"
+          placeholder="Kosongkan jika tidak ingin mengubah password">
       </div>
 
       <!-- Konfirmasi Password -->
       <div class="form-group full">
         <label>Konfirmasi Password</label>
-        <input type="password" id="confirm_password" name="confirm_password" placeholder="Kosongkan jika tidak ingin mengubah password" onkeyup="cekPassword()">
+        <input type="password" id="confirm_password" name="confirm_password"
+          placeholder="Kosongkan jika tidak ingin mengubah password" onkeyup="cekPassword()">
         <p id="error_password" style="color:red;"></p>
       </div>
 
@@ -206,22 +306,22 @@ input::placeholder {
 </div>
 
 <script>
-function cekPassword() {
+  function cekPassword() {
     var pass1 = document.getElementById("new_password").value;
     var pass2 = document.getElementById("confirm_password").value;
     var error = document.getElementById("error_password");
 
     if (pass2.length === 0) {
-        error.innerHTML = "";
-        return;
+      error.innerHTML = "";
+      return;
     }
 
     if (pass1 !== pass2) {
-        error.innerHTML = "Password tidak sama";
+      error.innerHTML = "Password tidak sama";
     } else {
-        error.innerHTML = "";
+      error.innerHTML = "";
     }
-}
+  }
 </script>
 
 {% endblock %}

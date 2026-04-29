@@ -8,17 +8,15 @@
 
 <style>
   body {
-  margin: 0;
-  font-family: 'Poppins', Arial;
-  background: linear-gradient(
-    135deg,
-    #f5ebe6 0%,     /* cream terang (kiri atas) */
-    #e9ded7 40%,    /* transisi */
-    #e6d3d8 70%,    /* mulai pink */
-    #d9c7d0 100%    /* pink-ungu (kanan bawah) */
-  );
-  min-height: 100vh;
-}
+    margin: 0;
+    font-family: 'Poppins', Arial;
+    background: linear-gradient(135deg,
+        #f5ebe6 0%,
+        #e9ded7 40%,
+        #e6d3d8 70%,
+        #d9c7d0 100%);
+    min-height: 100vh;
+  }
 
   .container {
     width: 420px;
@@ -26,7 +24,7 @@
     background: #f3f3f3;
     padding: 40px;
     border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     text-align: center;
   }
 
@@ -103,7 +101,7 @@
 
   {% if message %}
   <script>
-      alert("{{ message }}");
+    alert("{{ message }}");
   </script>
   {% endif %}
 

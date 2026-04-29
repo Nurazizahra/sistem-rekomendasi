@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+
+load_dotenv()
 import os
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -5,8 +8,6 @@ from models.user_model import insert_user, get_user_by_username, update_user
 from services.kalori import hitung_kebutuhan_energi
 from services.rule_based import filter_makanan_rule_based
 from models.food_model import get_all_makanan, get_makanan_by_id
-from dotenv import load_dotenv
-load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = "secret123"  # wajib untuk session
@@ -77,7 +78,7 @@ def register():
             "tinggi_badan": int(request.form.get("tinggi")),
             "aktivitas_harian": request.form.get("aktivitas"),
             "alergi": request.form.get("alergi"),
-            "password": hashed_password
+            "password": hashed_password,
         }
 
         insert_user(data)
@@ -146,79 +147,54 @@ def home():
     # =============================
     return render_template("home.html", user=user, tee=tee)
 
+
 # =============================
 # SEARCH RESULT
 # =============================
 @app.route("/search")
 def search():
     from services.cbf import cbf_ranking
-    
-    # =============================
-    # CEK LOGIN
-    # =============================
-    username = session.get("username")
 
+    username = session.get("username")
     if not username:
         return redirect(url_for("login"))
 
     user_data = get_user_by_username(username)
-
     if not user_data:
         return redirect(url_for("login"))
 
     user = user_data[0]
 
-    # =============================
-    # AMBIL DATA DARI SESSION
-    # =============================
     target_min = session.get("target_min")
     target_max = session.get("target_max")
     query = session.get("query")
     porsi = session.get("porsi")
 
-    # validasi sederhana
     if not query:
         return redirect(url_for("home"))
 
-    # =============================
-    # AMBIL DATA MAKANAN
-    # =============================
+    # 🔥 FIX 1: konversi float
+    try:
+        target_min = float(target_min)
+        target_max = float(target_max)
+    except:
+        target_min = 0
+        target_max = 9999
+
     data_makanan = get_all_makanan()
 
-    # =============================
-    # RULE-BASED FILTERING
-    # =============================
     filtered = filter_makanan_rule_based(
-        data_makanan,
-        user,
-        target_min,
-        target_max,
-        porsi
+        data_makanan, user, target_min, target_max, porsi
     )
 
-    # =============================
-    # PREPROCESS QUERY (MINIMAL)
-    # =============================
     query_clean = query.lower().replace("-", " ").strip()
 
-    # =============================
-    # CBF RANKING
-    # =============================
+    # 🔥 FIX 2: CBF ranking
     if filtered:
         hasil = cbf_ranking(query_clean, filtered, top_n=5)
     else:
         hasil = []
 
-    # =============================
-    # DEBUG (opsional)
-    # =============================
-    print("Query:", query_clean)
-    print("Jumlah setelah rule-based:", len(filtered))
-    print("Jumlah hasil akhir:", len(hasil))
-
-    # =============================
-    # RENDER
-    # =============================
     return render_template(
         "search.html",
         user=user,
@@ -226,8 +202,9 @@ def search():
         target_min=target_min,
         target_max=target_max,
         porsi=porsi,
-        hasil=hasil
+        hasil=hasil,
     )
+
 
 # =============================
 # DETAIL FOOD
@@ -257,6 +234,7 @@ def detail(id):
     makanan = data[0]
 
     return render_template("detail.html", user=user, makanan=makanan)
+
 
 # =============================
 # PROFILE EDIT
@@ -296,14 +274,24 @@ def profile():
             if not check_password_hash(user["password"], old_password):
                 message = "Password sekarang salah"
                 message_type = "error"
-                return render_template("profile.html", user=user, message=message, message_type=message_type)
+                return render_template(
+                    "profile.html",
+                    user=user,
+                    message=message,
+                    message_type=message_type,
+                )
 
         # cek konfirmasi password
         if new_password or confirm_password:
             if new_password != confirm_password:
                 message = "Konfirmasi password tidak cocok"
                 message_type = "error"
-                return render_template("profile.html", user=user, message=message, message_type=message_type)
+                return render_template(
+                    "profile.html",
+                    user=user,
+                    message=message,
+                    message_type=message_type,
+                )
 
         # data update
         update_data = {
@@ -311,7 +299,7 @@ def profile():
             "berat_badan": berat,
             "tinggi_badan": tinggi,
             "aktivitas_harian": aktivitas,
-            "alergi": alergi
+            "alergi": alergi,
         }
 
         # update password jika ada
@@ -328,7 +316,9 @@ def profile():
         user_data = get_user_by_username(username)
         user = user_data[0]
 
-    return render_template("profile.html", user=user, message=message, message_type=message_type)
+    return render_template(
+        "profile.html", user=user, message=message, message_type=message_type
+    )
 
 
 # =============================
@@ -345,5 +335,6 @@ def logout():
 # =============================
 if __name__ == "__main__":
     import os
+
     port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port, debug=True)

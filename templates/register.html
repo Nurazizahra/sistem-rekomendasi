@@ -12,14 +12,9 @@
     font-family: 'Poppins', Arial;
     background: linear-gradient(135deg,
         #f5ebe6 0%,
-        /* cream terang (kiri atas) */
         #e9ded7 40%,
-        /* transisi */
         #e6d3d8 70%,
-        /* mulai pink */
-        #d9c7d0 100%
-        /* pink-ungu (kanan bawah) */
-      );
+        #d9c7d0 100%);
     min-height: 100vh;
   }
 
@@ -63,6 +58,82 @@
     font-weight: bold;
   }
 
+  .label-with-tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .info-icon {
+    width: 18px;
+    height: 18px;
+    background: #e5e5e5;
+    color: #333;
+    border-radius: 50%;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .tooltip {
+    position: absolute;
+    top: 40px;
+    left: 0;
+
+    width: 380px;
+    max-width: 420px;
+
+    padding: 16px 18px;
+
+    background: #020617;
+    color: #fff;
+
+    border-radius: 14px;
+    font-size: 13px;
+    line-height: 1.6;
+
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition: 0.25s ease;
+    z-index: 99;
+
+    text-align: justify;
+  }
+
+  .tooltip::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 20px;
+
+    width: 12px;
+    height: 12px;
+    background: #020617;
+
+    transform: rotate(45deg);
+  }
+
+  .tooltip b {
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .tooltip br {
+    margin-bottom: 8px;
+  }
+
+  .label-with-tooltip:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
   input,
   select {
     padding: 12px 14px;
@@ -83,13 +154,11 @@
 
     border-radius: 14px;
 
-    /* arrow custom */
     background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M5 7l5 5 5-5z'/></svg>");
     background-repeat: no-repeat;
     background-position: right 14px center;
     background-size: 16px;
 
-    /* efek lembut */
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
   }
 
@@ -197,7 +266,23 @@
       </div>
 
       <div class="form-group">
-        <label>Aktivitas Harian</label>
+        <label class="label-with-tooltip">
+          Aktivitas Harian
+          <span class="info-icon">?</span>
+
+          <div class="tooltip">
+            <b>Sedentary / Light Activity</b>
+            Aktivitas ringan, jarang olahraga, lebih banyak duduk atau berdiri (contoh: kerja kantor)
+            <br><br>
+
+            <b>Active / Moderately Active</b>
+            Aktivitas sedang, kadang olahraga rutin atau pekerjaan cukup aktif (contoh: jogging, bersepeda)
+            <br><br>
+
+            <b>Vigorous / Vigorously Active</b>
+            Aktivitas berat setiap hari, pekerjaan fisik atau olahraga intens (contoh: buruh, atlet, kerja lapangan)
+          </div>
+        </label>
         <select name="aktivitas" required>
           <option value="" disabled selected>-- Pilih aktivitas --</option>
           <option value="sedentary">Sedentary or Light Activity</option>

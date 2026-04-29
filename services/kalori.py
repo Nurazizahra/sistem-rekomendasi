@@ -2,6 +2,7 @@
 # HITUNG BMR (Mifflin-St Jeor)
 # =============================
 
+
 def hitung_bmr(jenis_kelamin, berat, tinggi, usia):
     """
     jenis_kelamin: 'laki-laki' / 'perempuan'
@@ -23,6 +24,7 @@ def hitung_bmr(jenis_kelamin, berat, tinggi, usia):
 # =============================
 # PAL (Physical Activity Level)
 # =============================
+
 
 def get_pal(aktivitas):
     """
@@ -48,6 +50,7 @@ def get_pal(aktivitas):
 # HITUNG TEE
 # =============================
 
+
 def hitung_tee(bmr, aktivitas):
     pal = get_pal(aktivitas)
     tee = bmr * pal
@@ -58,21 +61,16 @@ def hitung_tee(bmr, aktivitas):
 # FUNGSI UTAMA (ALL-IN-ONE)
 # =============================
 
+
 def hitung_kebutuhan_energi(user):
     """
     user: dict dari database
     """
 
     bmr = hitung_bmr(
-        user["jenis_kelamin"],
-        user["berat_badan"],
-        user["tinggi_badan"],
-        user["usia"]
+        user["jenis_kelamin"], user["berat_badan"], user["tinggi_badan"], user["usia"]
     )
 
     tee = hitung_tee(bmr, user["aktivitas_harian"])
 
-    return {
-        "bmr": round(bmr, 2),
-        "tee": round(tee, 2)
-    }
+    return {"bmr": round(bmr, 2), "tee": round(tee, 2)}

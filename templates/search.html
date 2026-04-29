@@ -13,7 +13,6 @@
     background: #eef0f2;
   }
 
-  /* CONTAINER */
   .container {
     width: 80%;
     margin: 50px auto;
@@ -34,14 +33,12 @@
     color: #ff5a00;
   }
 
-  /* GRID */
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 25px;
   }
 
-  /* CARD */
   .card {
     background: #f5f5f5;
     border-radius: 16px;
@@ -56,14 +53,41 @@
     transform: translateY(-5px);
   }
 
-  /* IMAGE */
+  /* WRAPPER IMAGE */
+  .card-image {
+    position: relative;
+  }
+
+  /* BADGE COSINE */
+  .similarity-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+
+    padding: 6px 12px;
+    border-radius: 999px;
+
+    font-size: 14px;
+    font-weight: 600;
+    color: #16a34a;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .card:hover .similarity-badge {
+    transform: scale(1.05);
+    transition: 0.2s;
+  }
+
   .card img {
     width: 100%;
     height: 180px;
     object-fit: cover;
   }
 
-  /* CONTENT */
   .card-body {
     padding: 18px;
   }
@@ -74,7 +98,6 @@
     font-weight: bold;
   }
 
-  /* FOOTER */
   .card-footer {
     display: flex;
     justify-content: space-between;
@@ -91,15 +114,54 @@
     color: #666;
     font-size: 14px;
   }
+
+  .empty-state {
+    text-align: center;
+    margin-top: 120px;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .empty-text {
+    font-size: 18px;
+    color: #5f6c7b;
+    margin-bottom: 25px;
+  }
+
+  .btn-home {
+    background: #020617;
+    color: white;
+    padding: 14px 28px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-block;
+    transition: 0.2s;
+  }
+
+  .btn-home:hover {
+    background: #111827;
+  }
 </style>
 
 <div class="container">
 
-  <!-- 🔥 HEADER CLEAN -->
   <h1>Hasil Pencarian</h1>
 
   <div class="subtitle">
-    Ditemukan <b>{{ hasil|length }}</b> makanan untuk "<b>{{ query }}</b>"
+    {% if hasil|length == 0 %}
+    Ditemukan 0 makanan untuk "<b>{{ query }}</b>"
     dengan
     <b>
       {% if porsi == "1" %}
@@ -108,10 +170,29 @@
       lebih dari 1 porsi
       {% endif %}
     </b>
+    {% else %}
+    Ditemukan <b>{{ hasil|length }}</b> menu untuk "<b>{{ query }}</b>"
+    dengan
+    <b>
+      {% if porsi == "1" %}
+      1 porsi
+      {% else %}
+      lebih dari 1 porsi
+      {% endif %}
+    </b>
+    {% endif %}
   </div>
 
   {% if hasil|length == 0 %}
-  <p>Tidak ada makanan yang sesuai 😢</p>
+  <div class="empty-state">
+    <div class="empty-text">
+      Tidak ada makanan yang sesuai dengan kriteria pencarian Anda
+    </div>
+
+    <a href="/home" class="btn-home">
+      Coba Pencarian Lain
+    </a>
+  </div>
   {% else %}
 
   <div class="grid">
@@ -119,7 +200,14 @@
     {% for m in hasil %}
     <a href="/detail/{{ m.id }}" class="card">
 
-      <img src="{{ m.gambar }}" onerror="this.src='https://via.placeholder.com/300x200'">
+      <div class="card-image">
+        <img src="{{ m.gambar }}" onerror="this.src='https://via.placeholder.com/300x200'">
+
+        <!-- COSINE SIMILARITY -->
+        <div class="similarity-badge">
+          {{ "%.4f"|format(m.similarity) }} cocok
+        </div>
+      </div>
 
       <div class="card-body">
         <div class="title">{{ m.nama_makanan }}</div>
