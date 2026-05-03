@@ -214,6 +214,12 @@
   <form method="POST">
     <div class="form-grid">
 
+      <!-- Username -->
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" name="username" value="{{ user.username }}" required>
+      </div>
+
       <!-- Usia -->
       <div class="form-group">
         <label>Usia</label>
@@ -287,7 +293,7 @@
       </div>
 
       <!-- Konfirmasi Password -->
-      <div class="form-group full">
+      <div class="form-group">
         <label>Konfirmasi Password</label>
         <input type="password" id="confirm_password" name="confirm_password"
           placeholder="Kosongkan jika tidak ingin mengubah password" onkeyup="cekPassword()">

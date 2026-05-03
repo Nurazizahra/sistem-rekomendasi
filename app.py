@@ -2,15 +2,41 @@ from dotenv import load_dotenv
 
 load_dotenv()
 import os
+import uuid
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from models.user_model import insert_user, get_user_by_username, update_user
+from models.user_model import (
+    insert_user,
+    get_user_by_username,
+    get_user_by_id,
+    update_user_by_id,
+)
+from models.interaction_model import insert_user_interaction, get_user_interaction
 from services.kalori import hitung_kebutuhan_energi
 from services.rule_based import filter_makanan_rule_based
 from models.food_model import get_all_makanan, get_makanan_by_id
 
 app = Flask(__name__)
 app.secret_key = "secret123"  # wajib untuk session
+
+
+def get_current_user():
+    user_id = session.get("user_id")
+    if user_id:
+        user_data = get_user_by_id(user_id)
+        if user_data:
+            return user_data[0]
+
+    username = session.get("username")
+    if username:
+        user_data = get_user_by_username(username)
+        if user_data:
+            user = user_data[0]
+            if user.get("id"):
+                session["user_id"] = user["id"]
+            return user
+
+    return None
 
 
 # =============================
@@ -39,7 +65,12 @@ def login():
             user = user_data[0]
 
             if check_password_hash(user["password"], password):
-                session["username"] = username
+                user_id = user.get("id")
+                if user_id:
+                    session["user_id"] = user_id
+                    session.pop("username", None)
+                else:
+                    session["username"] = username
                 return redirect(url_for("home"))
             else:
                 message = "Password salah"
@@ -95,17 +126,9 @@ def register():
 @app.route("/home", methods=["GET", "POST"])
 def home():
 
-    username = session.get("username")
-
-    if not username:
+    user = get_current_user()
+    if not user:
         return redirect(url_for("login"))
-
-    user_data = get_user_by_username(username)
-
-    if not user_data:
-        return redirect(url_for("login"))
-
-    user = user_data[0]
 
     # =============================
     # HITUNG BMR & TEE
@@ -139,6 +162,8 @@ def home():
         session["target_min"] = target_min
         session["target_max"] = target_max
         session["porsi"] = porsi
+        session["interaction_session_id"] = str(uuid.uuid4())
+        session["interaction_liked"] = False
 
         return redirect(url_for("search"))
 
@@ -155,15 +180,9 @@ def home():
 def search():
     from services.cbf import cbf_ranking
 
-    username = session.get("username")
-    if not username:
+    user = get_current_user()
+    if not user:
         return redirect(url_for("login"))
-
-    user_data = get_user_by_username(username)
-    if not user_data:
-        return redirect(url_for("login"))
-
-    user = user_data[0]
 
     target_min = session.get("target_min")
     target_max = session.get("target_max")
@@ -173,7 +192,6 @@ def search():
     if not query:
         return redirect(url_for("home"))
 
-    # 🔥 FIX 1: konversi float
     try:
         target_min = float(target_min)
         target_max = float(target_max)
@@ -189,7 +207,6 @@ def search():
 
     query_clean = query.lower().replace("-", " ").strip()
 
-    # 🔥 FIX 2: CBF ranking
     if filtered:
         hasil = cbf_ranking(query_clean, filtered, top_n=5)
     else:
@@ -209,21 +226,52 @@ def search():
 # =============================
 # DETAIL FOOD
 # =============================
-@app.route("/detail/<int:id>")
+@app.route("/detail/<int:id>", methods=["GET", "POST"])
 def detail(id):
 
-    username = session.get("username")
-
-    if not username:
+    user = get_current_user()
+    if not user:
         return redirect(url_for("login"))
 
-    # ambil user (buat header)
-    user_data = get_user_by_username(username)
+    message = None
+    interaction_liked = session.get("interaction_liked", False)
 
-    if not user_data:
-        return redirect(url_for("login"))
+    if request.method == "POST":
+        if interaction_liked:
+            message = "Anda sudah like 1 makanan pada sesi pencarian ini."
+        else:
+            query = request.form.get("query") or ""
+            rank = request.form.get("rank")
+            similarity = request.form.get("similarity")
+            total_result = request.form.get("total_result")
 
-    user = user_data[0]
+            interaction_session_id = session.get("interaction_session_id")
+            if not interaction_session_id:
+                interaction_session_id = str(uuid.uuid4())
+                session["interaction_session_id"] = interaction_session_id
+
+            interaction_data = {
+                "user_id": user["id"],
+                "makanan_id": id,
+                "query": query,
+                "rank": int(rank) if rank else None,
+                "similarity": float(similarity) if similarity else None,
+                "total_result": int(total_result) if total_result else None,
+                "session_id": interaction_session_id,
+            }
+
+            try:
+                insert_user_interaction(interaction_data)
+                session["interaction_liked"] = True
+                interaction_liked = True
+                message = "None"
+            except Exception as e:
+                if "duplicate key value violates unique constraint" in str(e) or "23505" in str(e):
+                    session["interaction_liked"] = True
+                    interaction_liked = True
+                    message = "Anda sudah like 1 makanan pada sesi pencarian ini."
+                else:
+                    raise
 
     # ambil data makanan
     data = get_makanan_by_id(id)
@@ -233,7 +281,32 @@ def detail(id):
 
     makanan = data[0]
 
-    return render_template("detail.html", user=user, makanan=makanan)
+    # cek apakah menu ini sudah dilike dalam sesi ini
+    interaction_session_id = session.get("interaction_session_id")
+    is_liked = False
+    if interaction_session_id:
+        existing_interaction = get_user_interaction(user["id"], id, interaction_session_id)
+        is_liked = bool(existing_interaction)
+
+    liked = interaction_liked or bool(request.args.get("liked"))
+    query = request.args.get("query", "")
+    rank = request.args.get("rank", "")
+    similarity = request.args.get("similarity", "")
+    total_result = request.args.get("total_result", "")
+
+    return render_template(
+        "detail.html",
+        user=user,
+        makanan=makanan,
+        liked=liked,
+        interaction_liked=interaction_liked,
+        is_liked=is_liked,
+        query=query,
+        rank=rank,
+        similarity=similarity,
+        total_result=total_result,
+        message=message,
+    )
 
 
 # =============================
@@ -242,23 +315,16 @@ def detail(id):
 @app.route("/profile", methods=["GET", "POST"])
 def profile():
 
-    username = session.get("username")
-
-    if not username:
+    user = get_current_user()
+    if not user:
         return redirect(url_for("login"))
-
-    user_data = get_user_by_username(username)
-
-    if not user_data:
-        return redirect(url_for("login"))
-
-    user = user_data[0]
 
     message = None
     message_type = None
 
     if request.method == "POST":
 
+        username_input = request.form.get("username")
         usia = int(request.form.get("usia"))
         berat = int(request.form.get("berat"))
         tinggi = int(request.form.get("tinggi"))
@@ -293,8 +359,22 @@ def profile():
                     message_type=message_type,
                 )
 
+        # cek username baru
+        if username_input and username_input != user["username"]:
+            existing_user = get_user_by_username(username_input)
+            if existing_user and existing_user[0].get("id") != user.get("id"):
+                message = "Username sudah digunakan oleh pengguna lain"
+                message_type = "error"
+                return render_template(
+                    "profile.html",
+                    user=user,
+                    message=message,
+                    message_type=message_type,
+                )
+
         # data update
         update_data = {
+            "username": username_input,
             "usia": usia,
             "berat_badan": berat,
             "tinggi_badan": tinggi,
@@ -307,13 +387,16 @@ def profile():
             hashed_password = generate_password_hash(new_password)
             update_data["password"] = hashed_password
 
-        update_user(username, update_data)
+        update_user_by_id(user["id"], update_data)
+
+        if session.get("username"):
+            session["username"] = username_input
 
         message = "Data berhasil diperbarui"
         message_type = "success"
 
         # ambil ulang data
-        user_data = get_user_by_username(username)
+        user_data = get_user_by_id(user["id"])
         user = user_data[0]
 
     return render_template(

@@ -18,7 +18,16 @@ def get_user_by_username(username):
 
 
 # =============================
-# UPDATE DATA PENGGUNA
+# AMBIL USER BERDASARKAN ID
 # =============================
-def update_user(username, data):
-    return supabase.table("pengguna").update(data).eq("username", username).execute()
+def get_user_by_id(user_id):
+    response = supabase.table("pengguna").select("*").eq("id", user_id).execute()
+
+    return response.data
+
+
+# =============================
+# UPDATE DATA PENGGUNA BERDASARKAN ID
+# =============================
+def update_user_by_id(user_id, data):
+    return supabase.table("pengguna").update(data).eq("id", user_id).execute()

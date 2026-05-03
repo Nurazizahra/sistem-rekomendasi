@@ -13,7 +13,7 @@ def get_all_makanan():
 
     while True:
         response = (
-            supabase.table("makanan")
+            supabase.table("makanan_coba")
             .select("*")
             .order("id")
             .range(offset, offset + limit - 1)
@@ -68,7 +68,7 @@ def get_all_makanan():
 # =============================
 def get_makanan_by_id(id):
 
-    response = supabase.table("makanan").select("*").eq("id", id).execute()
+    response = supabase.table("makanan_coba").select("*").eq("id", id).execute()
 
     data = response.data
 

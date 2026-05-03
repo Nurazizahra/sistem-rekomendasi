@@ -1,0 +1,43 @@
+<!-- HEADER DETAIL -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 40px;
+  background: #f5f5f5;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #374151;
+  font-weight: 500;
+  font-size: 19px;
+  transition: 0.2s;
+}
+
+.back-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.back-btn:hover {
+  color: #ff5a00;
+}
+</style>
+
+<div class="detail-header">
+  <a href="{{ url_for('search') }}" class="back-btn">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path d="M15 18l-6-6 6-6"></path>
+    </svg>
+    Kembali
+  </a>
+</div>

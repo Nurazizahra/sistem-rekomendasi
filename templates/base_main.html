@@ -5,9 +5,11 @@
 </head>
 <body>
 
-{% include "partials/header.html" %}
-
-<hr>
+{% if request.path.startswith('/detail') %}
+  {% include "partials/header_detail.html" %}
+{% else %}
+  {% include "partials/header.html" %}
+{% endif %}
 
 {% block content %}{% endblock %}
 
