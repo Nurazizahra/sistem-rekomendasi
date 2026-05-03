@@ -212,6 +212,20 @@ def search():
     else:
         hasil = []
 
+    search_meta = []
+    for idx, item in enumerate(hasil, start=1):
+        search_meta.append(
+            {
+                "id": item.get("id"),
+                "query": query,
+                "rank": idx,
+                "similarity": float(item.get("similarity", 0)),
+                "total_result": len(hasil),
+            }
+        )
+
+    session["detail_search_meta"] = search_meta
+
     return render_template(
         "search.html",
         user=user,
@@ -288,11 +302,21 @@ def detail(id):
         existing_interaction = get_user_interaction(user["id"], id, interaction_session_id)
         is_liked = bool(existing_interaction)
 
+    search_meta = session.get("detail_search_meta", [])
+    detail_meta = next((item for item in search_meta if item.get("id") == id), None)
+
+    if detail_meta:
+        query = detail_meta.get("query", session.get("query", ""))
+        rank = detail_meta.get("rank", "")
+        similarity = detail_meta.get("similarity", "")
+        total_result = detail_meta.get("total_result", "")
+    else:
+        query = session.get("query", "")
+        rank = ""
+        similarity = ""
+        total_result = ""
+
     liked = interaction_liked or bool(request.args.get("liked"))
-    query = request.args.get("query", "")
-    rank = request.args.get("rank", "")
-    similarity = request.args.get("similarity", "")
-    total_result = request.args.get("total_result", "")
 
     return render_template(
         "detail.html",

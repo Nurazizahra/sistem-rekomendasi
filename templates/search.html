@@ -198,7 +198,7 @@
   <div class="grid">
 
     {% for m in hasil %}
-    <a href="{{ url_for('detail', id=m.id, query=query, rank=loop.index, similarity='%.4f'|format(m.similarity), total_result=hasil|length) }}" class="card">
+    <a href="{{ url_for('detail', id=m.id) }}" class="card">
 
       <div class="card-image">
         <img src="{{ m.gambar }}" onerror="this.src='https://via.placeholder.com/300x200'">
