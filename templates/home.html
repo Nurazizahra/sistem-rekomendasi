@@ -21,31 +21,67 @@
   .calorie-card {
     width: 70%;
     margin: auto;
+
     background: linear-gradient(90deg, #ff6a00, #ff2e2e);
+
     color: white;
-    padding: 30px;
-    border-radius: 16px;
+
+    padding: 26px 32px;
+
+    border-radius: 22px;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    box-shadow: 0 10px 24px rgba(255, 90, 0, 0.18);
+  }
+
+  .calorie-card>div:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .calorie-card>div:first-child div:first-child {
+    font-size: 20px;
+    font-weight: 500;
   }
 
   .calorie-value {
-    font-size: 32px;
-    font-weight: bold;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1;
   }
 
+
   .icon {
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 255, 255, 0.2);
+    width: 92px;
+    height: 92px;
+
+    min-width: 92px;
+
     border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.22);
 
     display: flex;
     align-items: center;
     justify-content: center;
+  }
 
-    font-size: 36px;
+
+  .fire-icon {
+    width: 58px;
+    height: 58px;
+
+    stroke: white;
+    stroke-width: 1.8;
+
+    fill: none;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   /* FORM CARD */
@@ -87,11 +123,11 @@
   /* SLIDER */
   .range-wrapper {
     position: relative;
-    margin: 25px 0;
+    margin: 18px 0 10px;
   }
 
   .range-track {
-    height: 10px;
+    height: 8px;
     background: #e5e7eb;
     border-radius: 999px;
     position: relative;
@@ -123,15 +159,15 @@
 
   input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none;
-  
+
     appearance: none;
 
     pointer-events: auto;
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
 
     background: #ffffff;
-   
+
     border: 2px solid #d1d5db;
 
     border-radius: 50%;
@@ -160,6 +196,59 @@
     color: #666;
   }
 
+  /* MANUAL INPUT */
+  .manual-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 18px;
+  }
+
+  .manual-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .percent-input {
+    position: relative;
+  }
+
+  .percent-input input {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 12px 42px 12px 14px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: #e5e5e5;
+
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .percent-input input:focus {
+    outline: none;
+  }
+
+  .percent-input span {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    color: #64748b;
+    font-size: 14px;
+  }
+
+  .kkal-text {
+    margin-top: 8px;
+    color: #64748b;
+    font-size: 14px;
+  }
+
   select {
     width: 100%;
     padding: 12px 14px;
@@ -172,7 +261,7 @@
     color: #2d3748;
 
     appearance: none;
-   
+
     -webkit-appearance: none;
     -moz-appearance: none;
 
@@ -205,7 +294,19 @@
     <div>Total Kebutuhan Kalori Harian</div>
     <div class="calorie-value">{{ tee|round|int }} kkal</div>
   </div>
-  <div class="icon">🔥</div>
+  <div class="icon">
+    <svg class="fire-icon" viewBox="0 0 24 24">
+      <path d="M12 2
+             C12 5, 9 7, 9 10
+             C9 11.5, 10 12.5, 11 13.5
+             C10.5 11, 12 9.5, 13.5 8
+             C15 10, 17 11.5, 17 15
+             C17 18.3137, 14.3137 21, 11 21
+             C7.68629 21, 5 18.3137, 5 15
+             C5 10.5, 8 8, 9.5 5.5
+             C10.2 4.2, 11 3.2, 12 2Z" />
+    </svg>
+  </div>
 </div>
 
 <!-- FORM -->
@@ -218,9 +319,12 @@
       <button type="submit" id="btnCari">Cari</button>
     </div>
 
-    <label>Persentase Kalori</label>
+    <label style="font-size: 16px;">
+      Persentase Kalori yang Dibutuhkan
+    </label>
 
     <div class="range-wrapper">
+
       <div class="range-track">
         <div class="range-fill" id="fill"></div>
       </div>
@@ -229,18 +333,48 @@
       <input type="range" id="minRange" min="0" max="100" step="5" value="5">
       <input type="range" id="maxRange" min="0" max="100" step="5" value="35">
 
-      <!-- HIDDEN INPUT UNTUK BACKEND -->
+      <!-- HIDDEN INPUT -->
       <input type="hidden" name="min_kalori" id="minInput">
       <input type="hidden" name="max_kalori" id="maxInput">
+
     </div>
 
-    <div class="info">
-      <div class="badge" id="minText"></div>
-      <div class="badge" id="maxText"></div>
+    <!-- INPUT MANUAL -->
+    <div class="manual-grid">
+
+      <!-- MIN -->
+      <div class="manual-box">
+        <label class="manual-label">Min (%)</label>
+
+        <div class="percent-input">
+          <input type="number" id="minPercent" min="0" max="100" step="5" value="5">
+          <span>%</span>
+        </div>
+
+        <div class="kkal-text" id="minKkal">
+          ~400 kkal
+        </div>
+      </div>
+
+      <!-- MAX -->
+      <div class="manual-box">
+        <label class="manual-label">Max (%)</label>
+
+        <div class="percent-input">
+          <input type="number" id="maxPercent" min="0" max="100" step="5" value="35">
+          <span>%</span>
+        </div>
+
+        <div class="kkal-text" id="maxKkal">
+          ~1600 kkal
+        </div>
+      </div>
+
     </div>
 
     <div class="desc">
       Atur rentang persentase kalori yang Anda butuhkan dari total kebutuhan harian
+      ({{ tee|round|int }} kkal)
     </div>
 
     <label>Porsi</label>
@@ -256,48 +390,115 @@
 <script>
   const minRange = document.getElementById("minRange");
   const maxRange = document.getElementById("maxRange");
-  const fill = document.getElementById("fill");
 
-  const minText = document.getElementById("minText");
-  const maxText = document.getElementById("maxText");
+  const minPercent = document.getElementById("minPercent");
+  const maxPercent = document.getElementById("maxPercent");
+
+  const fill = document.getElementById("fill");
 
   const minInput = document.getElementById("minInput");
   const maxInput = document.getElementById("maxInput");
 
+  const minKkal = document.getElementById("minKkal");
+  const maxKkal = document.getElementById("maxKkal");
+
   const TOTAL = parseInt("{{ tee|default(0)|round|int }}");
 
-  function updateSlider() {
-    let min = parseInt(minRange.value);
-    let max = parseInt(maxRange.value);
 
-    if (min > max - 5) {
-      min = max - 5;
-      minRange.value = min;
+  function parsePercent(value) {
+    if (value === "" || value === null) return null;
+    const n = Number(value);
+    if (Number.isNaN(n)) return null;
+    return Math.max(0, Math.min(100, Math.round(n)));
+  }
+
+  function syncUI(min, max, source) {
+    min = parsePercent(min);
+    max = parsePercent(max);
+
+    if (min === null) {
+      min = parsePercent(minRange.value) ?? 5;
+    }
+    if (max === null) {
+      max = parsePercent(maxRange.value) ?? 35;
     }
 
-    if (max < min + 5) {
-      max = min + 5;
-      maxRange.value = max;
+    // Validasi relasi antar nilai berdasarkan sumber perubahan
+    if (source === "maxPercent" || source === "maxRange") {
+      if (max < min + 5) {
+        max = min + 5;
+      }
+    } else if (source === "minPercent" || source === "minRange") {
+      if (min > max - 5) {
+        min = max - 5;
+      }
+    } else {
+      if (min > max - 5) {
+        min = max - 5;
+      }
+      if (max < min + 5) {
+        max = min + 5;
+      }
     }
+
+    minRange.value = min;
+    maxRange.value = max;
+
+    minPercent.value = min;
+    maxPercent.value = max;
 
     fill.style.left = min + "%";
     fill.style.width = (max - min) + "%";
 
-    let minK = Math.round(min / 100 * TOTAL);
-    let maxK = Math.round(max / 100 * TOTAL);
+    let minKal = Math.round(min / 100 * TOTAL);
+    let maxKal = Math.round(max / 100 * TOTAL);
 
-    minText.innerText = `Min: ${min}% (~${minK} kkal)`;
-    maxText.innerText = `Max: ${max}% (~${maxK} kkal)`;
+    minKkal.innerText = `~${minKal} kkal`;
+    maxKkal.innerText = `~${maxKal} kkal`;
 
-    // KIRIM KE BACKEND
     minInput.value = min;
     maxInput.value = max;
   }
 
-  minRange.addEventListener("input", updateSlider);
-  maxRange.addEventListener("input", updateSlider);
+  /* SLIDER */
+  minRange.addEventListener("input", () => {
+    let val = parsePercent(minRange.value);
+    if (val === null) return;
+    syncUI(val, parsePercent(maxRange.value), "minRange");
+  });
 
-  updateSlider();
+  maxRange.addEventListener("input", () => {
+    let val = parsePercent(maxRange.value);
+    if (val === null) return;
+    syncUI(parsePercent(minRange.value), val, "maxRange");
+  });
+
+  /* INPUT MANUAL */
+  minPercent.addEventListener("input", () => {
+    const val = parsePercent(minPercent.value);
+    if (val === null) return;
+    minPercent.value = val;
+  });
+
+  maxPercent.addEventListener("input", () => {
+    const val = parsePercent(maxPercent.value);
+    if (val === null) return;
+    maxPercent.value = val;
+  });
+
+  minPercent.addEventListener("blur", () => {
+    const min = parsePercent(minPercent.value);
+    if (min === null) return;
+    syncUI(min, parsePercent(maxPercent.value), "minPercent");
+  });
+
+  maxPercent.addEventListener("blur", () => {
+    const max = parsePercent(maxPercent.value);
+    if (max === null) return;
+    syncUI(parsePercent(minPercent.value), max, "maxPercent");
+  });
+
+  syncUI(5, 35, "init");
 
   const form = document.querySelector("form");
   const btn = document.getElementById("btnCari");

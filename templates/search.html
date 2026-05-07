@@ -33,6 +33,55 @@
     color: #ff5a00;
   }
 
+  /* INFO COSINE */
+  .cosine-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+
+    background: #eef4ff;
+    border: 1px solid #bfd3ff;
+
+    padding: 22px 24px;
+    border-radius: 18px;
+
+    margin-bottom: 35px;
+  }
+
+  .cosine-icon {
+    min-width: 34px;
+    height: 34px;
+    border-radius: 50%;
+
+    border: 2px solid #2563eb;
+    color: #2563eb;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: bold;
+    font-size: 18px;
+  }
+
+  .cosine-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d4ed8;
+
+    margin-bottom: 8px;
+  }
+
+  .cosine-desc {
+    color: #1d4ed8;
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  .cosine-desc b {
+    font-weight: 600;
+  }
+
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -64,15 +113,11 @@
     top: 12px;
     right: 12px;
 
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(4px);
 
-    padding: 6px 12px;
-    border-radius: 999px;
-
-    font-size: 14px;
-    font-weight: 600;
-    color: #16a34a;
+    padding: 12px 16px;
+    border-radius: 18px;
 
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   }
@@ -183,6 +228,24 @@
     {% endif %}
   </div>
 
+  {% if hasil|length > 0 %}
+  <div class="cosine-info">
+    <div class="cosine-icon">i</div>
+
+    <div>
+      <div class="cosine-title">
+        Tentang Nilai Kecocokan
+      </div>
+
+      <div class="cosine-desc">
+        Nilai kecocokan menunjukkan tingkat relevansi makanan terhadap pencarian Anda berdasarkan
+        perhitungan <b>cosine similarity</b>. Semakin tinggi nilainya atau semakin mendekati 1,
+        semakin relevan rekomendasi yang diberikan.
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
   {% if hasil|length == 0 %}
   <div class="empty-state">
     <div class="empty-text">
@@ -205,7 +268,13 @@
 
         <!-- COSINE SIMILARITY -->
         <div class="similarity-badge">
-          {{ "%.4f"|format(m.similarity) }} cocok
+          <div style="font-size: 13px; color:#64748b; font-weight:500;">
+            Kecocokan:
+          </div>
+
+          <div style="font-size: 15px; font-weight:700; color:#16a34a;">
+            {{ "%.4f"|format(m.similarity) }}
+          </div>
         </div>
       </div>
 

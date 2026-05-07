@@ -149,8 +149,8 @@ def home():
         # =============================
         # HITUNG TARGET KALORI
         # =============================
-        min_kalori = float(min_kalori)
-        max_kalori = float(max_kalori)
+        min_kalori = max(0, min(100, float(min_kalori)))
+        max_kalori = max(0, min(100, float(max_kalori)))
 
         target_min = (min_kalori / 100) * tee
         target_max = (max_kalori / 100) * tee
@@ -219,7 +219,7 @@ def search():
                 "id": item.get("id"),
                 "query": query,
                 "rank": idx,
-                "similarity": float(item.get("similarity", 0)),
+                "similarity": round(float(item.get("similarity", 0)), 4),
                 "total_result": len(hasil),
             }
         )
@@ -269,7 +269,7 @@ def detail(id):
                 "makanan_id": id,
                 "query": query,
                 "rank": int(rank) if rank else None,
-                "similarity": float(similarity) if similarity else None,
+                "similarity": round(float(similarity), 4) if similarity else None,
                 "total_result": int(total_result) if total_result else None,
                 "session_id": interaction_session_id,
             }
