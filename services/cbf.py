@@ -60,7 +60,7 @@ def preprocess_query(text):
 # =============================
 # CBF RANKING
 # =============================
-def cbf_ranking(query, data_makanan, top_n=5):
+def cbf_ranking(query, data_makanan, top_n=5, threshold=0.20):
 
     # lazy import (untuk Railway)
     from sklearn.feature_extraction.text import TfidfVectorizer
@@ -114,7 +114,6 @@ def cbf_ranking(query, data_makanan, top_n=5):
     # =============================
     # FILTER DENGAN THRESHOLD
     # =============================
-    threshold = 0.10
     hasil_filtered = [m for m in hasil if m["similarity"] >= threshold]
 
     # =============================
