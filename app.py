@@ -219,7 +219,7 @@ def search():
                 "id": item.get("id"),
                 "query": query,
                 "rank": idx,
-                "similarity": round(float(item.get("similarity", 0)), 4),
+                "similarity": float(item.get("similarity", 0)),
                 "total_result": len(hasil),
             }
         )
@@ -269,7 +269,7 @@ def detail(id):
                 "makanan_id": id,
                 "query": query,
                 "rank": int(rank) if rank else None,
-                "similarity": round(float(similarity), 4) if similarity else None,
+                "similarity": float(similarity) if similarity else None,
                 "total_result": int(total_result) if total_result else None,
                 "session_id": interaction_session_id,
             }

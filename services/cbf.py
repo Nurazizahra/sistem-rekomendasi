@@ -103,7 +103,7 @@ def cbf_ranking(query, data_makanan, top_n=5, threshold=0.20):
     hasil = []
     for i, m in enumerate(data_makanan):
         m_copy = m.copy()
-        m_copy["similarity"] = round(float(similarity[i]), 4)
+        m_copy["similarity"] = float(similarity[i])
         hasil.append(m_copy)
 
     # =============================
