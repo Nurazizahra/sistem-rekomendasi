@@ -43,80 +43,6 @@
     align-items: center;
   }
 
-  .like-form {
-    margin: 0;
-  }
-
-  .like-btn {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    border: none;
-    background: transparent;
-    padding: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    cursor: pointer;
-    transition: all 0.25s ease;
-    transform: scale(1);
-  }
-
-  .like-btn:hover {
-    background: #e5e7eb;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-    transform: scale(1.08);
-  }
-
-  .like-btn:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-    transform: scale(1);
-    background: transparent;
-    box-shadow: none;
-  }
-
-  .heart {
-    width: 38px;
-    height: 38px;
-
-    fill: transparent;
-    stroke: #9ca3af;
-    stroke-width: 2;
-
-    transition: all 0.25s ease;
-  }
-
-  .like-btn:hover .heart {
-    stroke: #ef4444;
-  }
-
-  .like-btn:hover .heart {
-    stroke: #ef4444;
-  }
-
-  .like-btn.active .heart {
-    fill: #ef4444;
-    stroke: #ef4444;
-    animation: pop 0.25s ease;
-  }
-
-  @keyframes pop {
-    0% {
-      transform: scale(1);
-    }
-
-    50% {
-      transform: scale(1.25);
-    }
-
-    100% {
-      transform: scale(1);
-    }
-  }
-
   .info {
     display: flex;
     gap: 20px;
@@ -189,6 +115,51 @@
     flex: 1;
     text-align: justify;
   }
+
+  /* BADGE COSINE */
+  .similarity-badge {
+    background: #e7f5ea;
+    color: #15803d;
+
+    padding: 8px 16px;
+    border-radius: 12px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .similarity-label {
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  .bottom-action {
+    margin-top: 35px;
+    padding-top: 30px;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .search-again-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 24px;
+    background: #020617;
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    transition: 0.2s;
+  }
+
+  .search-again-btn:hover {
+    background: #111827;
+  }
 </style>
 
 <div class="container">
@@ -203,28 +174,21 @@
 
     <div class="title-wrapper">
       <div class="title">{{ makanan.nama_makanan }}</div>
-
-      <form method="POST" class="like-form">
-        <input type="hidden" name="query" value="{{ query }}">
-        <input type="hidden" name="rank" value="{{ rank }}">
-        <input type="hidden" name="similarity" value="{{ similarity }}">
-        <input type="hidden" name="total_result" value="{{ total_result }}">
-
-        <button type="submit" class="like-btn {% if is_liked %}active{% endif %}" aria-label="Like makanan" {% if interaction_liked %}disabled{% endif %}>
-          <svg class="heart" viewBox="0 0 24 24">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
-        2 6 4 4 6.5 4c1.74 0 3.41 1.01 4.22 2.09
-        C11.09 5.01 12.76 4 14.5 4
-        17 4 19 6 19 8.5
-        c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-          </svg>
-        </button>
-      </form>
     </div>
 
     <div class="info">
-      <div class="kalori">{{ makanan.kalori }} kkal</div>
-      <div class="porsi">{{ makanan.porsi }} porsi</div>
+      <div class="kalori">{{ makanan.kalori }} kalori</div>
+
+      <div class="porsi">
+        {{ makanan.porsi }} porsi
+      </div>
+
+      {% if similarity is defined %}
+      <div class="similarity-badge">
+        <span class="similarity-label">Kecocokan:</span>
+        {{ "%.4f"|format(similarity) }}
+      </div>
+      {% endif %}
     </div>
 
     <!-- BAHAN -->
@@ -247,6 +211,12 @@
       </div>
       {% endif %}
       {% endfor %}
+    </div>
+
+    <div class="bottom-action">
+      <a href="/home" class="search-again-btn">
+        Cari Makanan Lain
+      </a>
     </div>
 
   </div>

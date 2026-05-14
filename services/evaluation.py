@@ -1,6 +1,8 @@
 from dotenv import load_dotenv
 load_dotenv()
 
+from docx import Document
+
 from services.cbf import cbf_ranking
 from models.food_model import get_all_makanan
 
@@ -57,7 +59,7 @@ test_queries = [
         "relevant": [
             "Mi Shirataki Goreng",
             "Mi Shirataki Soto",
-            "Mie Keju",
+            "Mi Keju",
             "Ayam Teriyaki & Mi Soba",
             "Carbonara Ayam dengan Mi Shirataki",
             "Seblak Mi Shirataki",
@@ -351,6 +353,13 @@ thresholds = [0.1, 0.2, 0.3, 0.4, 0.5]
 data_makanan = get_all_makanan()
 
 # ====================================
+# BUAT DOKUMEN WORD
+# ====================================
+doc = Document()
+
+doc.add_heading('Hasil Evaluasi Threshold', level=1)
+
+# ====================================
 # HITUNG PRECISION
 # ====================================
 for threshold in thresholds:
@@ -360,6 +369,21 @@ for threshold in thresholds:
     print("\n=================================")
     print(f"THRESHOLD : {threshold}")
     print("=================================")
+
+    # ====================================
+    # JUDUL THRESHOLD
+    # ====================================
+    doc.add_heading(f'THRESHOLD : {threshold}', level=2)
+
+    # ====================================
+    # BUAT TABEL
+    # ====================================
+    table = doc.add_table(rows=1, cols=2)
+    table.style = 'Table Grid'
+
+    hdr_cells = table.rows[0].cells
+    hdr_cells[0].text = 'Query'
+    hdr_cells[1].text = 'Precision'
 
     for test in test_queries:
 
@@ -394,8 +418,30 @@ for threshold in thresholds:
         print(f"\nQuery : {query}")
         print(f"Precision : {precision:.2f}")
 
+        # ====================================
+        # TAMBAH KE TABEL WORD
+        # ====================================
+        row_cells = table.add_row().cells
+        row_cells[0].text = query
+        row_cells[1].text = f"{precision:.2f}"
+
     average_precision = total_precision / len(test_queries)
 
     print("\n---------------------------------")
     print(f"RATA-RATA PRECISION : {average_precision:.2f}")
     print("---------------------------------")
+
+    # ====================================
+    # RATA-RATA PRECISION
+    # ====================================
+    p = doc.add_paragraph()
+    p.add_run('RATA-RATA PRECISION : ').bold = True
+    p.add_run(f'{average_precision:.2f}')
+
+# ====================================
+# SIMPAN WORD
+# ====================================
+doc.save("evaluasi_threshold.docx")
+
+print("\nSELESAI!")
+print("File tersimpan: evaluasi_threshold.docx")

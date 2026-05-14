@@ -33,19 +33,14 @@
     color: #ff5a00;
   }
 
-  /* INFO COSINE */
-  .cosine-info {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-
-    background: #eef4ff;
-    border: 1px solid #bfd3ff;
-
-    padding: 22px 24px;
-    border-radius: 18px;
-
-    margin-bottom: 35px;
+  .message {
+    margin-top: 10px;
+    padding: 10px 15px;
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-radius: 8px;
+    font-size: 14px;
   }
 
   .cosine-icon {
@@ -62,24 +57,6 @@
 
     font-weight: bold;
     font-size: 18px;
-  }
-
-  .cosine-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1d4ed8;
-
-    margin-bottom: 8px;
-  }
-
-  .cosine-desc {
-    color: #1d4ed8;
-    line-height: 1.7;
-    font-size: 15px;
-  }
-
-  .cosine-desc b {
-    font-weight: 600;
   }
 
   .grid {
@@ -198,6 +175,160 @@
   .btn-home:hover {
     background: #111827;
   }
+
+  /* INFO TOP */
+  /* INFO TOP */
+  .top-info {
+    display: flex;
+    align-items: stretch;
+
+    background: linear-gradient(90deg,
+        #f7f3eb 0%,
+        #f8f1f0 45%,
+        #f8eef5 100%);
+
+    border: 1px solid #f2c28d;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    margin-bottom: 38px;
+  }
+
+  .info-box {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    padding: 26px 28px;
+  }
+
+  .info-divider {
+    width: 1px;
+    background: #f0b15e;
+
+    margin: 38px 0;
+  }
+
+  .info-heart {
+    width: 54px;
+    height: 54px;
+
+    min-width: 54px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow:
+      0 4px 10px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+
+  .info-heart svg {
+    width: 28px;
+    height: 28px;
+
+    color: #ff3b3b;
+
+    stroke-width: 2.2;
+  }
+
+  .info-text {
+    color: #1e293b;
+
+    line-height: 1.55;
+    font-size: 16px;
+
+    max-width: 430px;
+  }
+
+  .info-text b {
+    font-weight: 700;
+  }
+
+  .cosine-icon {
+    min-width: 24px;
+    width: 24px;
+    height: 24px;
+
+    border-radius: 50%;
+
+    border: 2px solid #2558ff;
+    color: #2558ff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    background: transparent;
+  }
+
+  /* LIKE BUTTON */
+  .like-btn {
+    margin-top: 18px;
+
+    width: 100%;
+    height: 54px;
+
+    border: 1px solid #d7dce3;
+    border-radius: 18px;
+
+    background: #f7f7f7;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    font-size: 18px;
+    font-weight: 600;
+
+    color: #475569;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+  }
+
+  .like-btn:hover {
+    background: #ffffff;
+    border-color: #cfd6de;
+  }
+
+  .like-btn svg {
+    width: 24px;
+    height: 24px;
+
+    stroke: #9ca3af;
+    fill: none;
+
+    transition: 0.2s;
+  }
+
+  .like-btn.liked {
+    color: #ff2d55;
+  }
+
+  .like-btn.liked svg {
+    fill: #ff2d55;
+    stroke: #ff2d55;
+  }
+
+  .like-btn:disabled {
+    opacity: 1;
+    cursor: not-allowed;
+  }
 </style>
 
 <div class="container">
@@ -228,21 +359,48 @@
     {% endif %}
   </div>
 
+  {% if message %}
+  <div class="message">{{ message }}</div>
+  {% endif %}
+
   {% if hasil|length > 0 %}
-  <div class="cosine-info">
-    <div class="cosine-icon">i</div>
+  <div class="top-info">
 
-    <div>
-      <div class="cosine-title">
-        Tentang Nilai Kecocokan
+    <!-- LEFT -->
+    <div class="info-box">
+
+      <div class="info-heart">
+
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path
+            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+          </path>
+        </svg>
+
       </div>
 
-      <div class="cosine-desc">
-        Nilai kecocokan menunjukkan tingkat relevansi makanan terhadap pencarian Anda berdasarkan
-        perhitungan <b>cosine similarity</b>. Semakin tinggi nilainya atau semakin mendekati 1,
-        semakin relevan rekomendasi yang diberikan.
+      <div class="info-text">
+        Pilih satu atau lebih makanan yang paling relevan dengan pencarian Anda
+        menggunakan tombol <b>suka</b>.
       </div>
+
     </div>
+
+    <div class="info-divider"></div>
+
+    <!-- RIGHT -->
+    <div class="info-box">
+
+      <div class="cosine-icon">i</div>
+
+      <div class="info-text">
+        <b>Nilai kecocokan</b> menunjukkan relevansi berdasarkan
+        <b>cosine similarity</b>. Semakin mendekati 1, semakin relevan.
+      </div>
+
+    </div>
+
   </div>
   {% endif %}
 
@@ -283,10 +441,34 @@
 
         <div class="card-footer">
           <div class="kalori">{{ m.kalori }} kkal</div>
+
           <div class="porsi">
             {{ m.porsi }} porsi
           </div>
         </div>
+
+        <!-- LIKE BUTTON -->
+        <form method="POST" style="width:100%;" onsubmit="event.stopPropagation();">
+          <input type="hidden" name="makanan_id" value="{{ m.id }}">
+          <button type="submit" class="like-btn {% if m.is_liked %}liked{% endif %}" {% if m.is_liked %}disabled{% endif
+            %} onclick="event.stopPropagation();">
+
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+              </path>
+            </svg>
+
+            {% if m.is_liked %}
+            Disukai
+            {% else %}
+            Suka
+            {% endif %}
+
+          </button>
+        </form>
+
       </div>
 
     </a>

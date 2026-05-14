@@ -50,7 +50,6 @@ def preprocess_query(text):
     normalized_words = []
     for w in words:
         if w not in stopwords:
-            # Normalisasi sinonim jika ada di mapping
             normalized_word = synonym_map.get(w, w)
             normalized_words.append(normalized_word)
 

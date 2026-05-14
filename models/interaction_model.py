@@ -1,10 +1,21 @@
 from config.supabase import supabase
 
-
+# =============================
+# INSERT INTERACTION USER
+# =============================
 def insert_user_interaction(data):
     return supabase.table("user_interaksi").insert(data).execute()
 
+# =============================
+# AMBIL SEMUA INTERACTION USER
+# DALAM 1 SESSION
+# =============================
+def get_user_interactions_by_session(user_id, session_id):
 
-def get_user_interaction(user_id, makanan_id, session_id):
-    response = supabase.table("user_interaksi").select("*").eq("user_id", user_id).eq("makanan_id", makanan_id).eq("session_id", session_id).execute()
+    response = supabase.table("user_interaksi") \
+        .select("makanan_id") \
+        .eq("user_id", user_id) \
+        .eq("session_id", session_id) \
+        .execute()
+
     return response.data

@@ -11,7 +11,7 @@ from models.user_model import (
     get_user_by_id,
     update_user_by_id,
 )
-from models.interaction_model import insert_user_interaction, get_user_interaction
+from models.interaction_model import insert_user_interaction, get_user_interactions_by_session
 from services.kalori import hitung_kebutuhan_energi
 from services.rule_based import filter_makanan_rule_based
 from models.food_model import get_all_makanan, get_makanan_by_id
@@ -21,6 +21,7 @@ app.secret_key = "secret123"  # wajib untuk session
 
 
 def get_current_user():
+    
     user_id = session.get("user_id")
     if user_id:
         user_data = get_user_by_id(user_id)
@@ -176,7 +177,7 @@ def home():
 # =============================
 # SEARCH RESULT
 # =============================
-@app.route("/search")
+@app.route("/search", methods=["GET", "POST"])
 def search():
     from services.cbf import cbf_ranking
 
@@ -184,13 +185,63 @@ def search():
     if not user:
         return redirect(url_for("login"))
 
-    target_min = session.get("target_min")
-    target_max = session.get("target_max")
+    message = None
+
+    if request.method == "POST":
+        makanan_id = request.form.get("makanan_id")
+
+        interaction_session_id = session.get("interaction_session_id")
+        if not interaction_session_id:
+            interaction_session_id = str(uuid.uuid4())
+            session["interaction_session_id"] = interaction_session_id
+
+        # Ambil meta dari session
+        search_meta = session.get("detail_search_meta", [])
+        detail_meta = next((item for item in search_meta if item.get("id") == int(makanan_id)), None)
+
+        if detail_meta:
+            query = detail_meta.get("query", session.get("query", ""))
+            rank = detail_meta.get("rank", "")
+            similarity = detail_meta.get("similarity", "")
+            total_result = detail_meta.get("total_result", "")
+        else:
+            query = session.get("query", "")
+            rank = ""
+            similarity = ""
+            total_result = ""
+
+        interaction_data = {
+            "user_id": user["id"],
+            "makanan_id": int(makanan_id),
+            "query": query,
+            "rank": int(rank) if rank else None,
+            "similarity": float(similarity) if similarity else None,
+            "total_result": int(total_result) if total_result else None,
+            "session_id": interaction_session_id,
+        }
+
+        try:
+            insert_user_interaction(interaction_data)
+            message = "Makanan berhasil dilike!"
+        except Exception as e:
+            if "duplicate key value violates unique constraint" in str(e) or "23505" in str(e):
+                message = "Makanan ini sudah Anda like."
+            else:
+                raise
+
+        return redirect(url_for('search'))
+
+    # Cek cache hasil di session
+    cached_hasil = session.get("cached_hasil")
+    cached_query = session.get("cached_query")
+    cached_porsi = session.get("cached_porsi")
+    cached_target_min = session.get("cached_target_min")
+    cached_target_max = session.get("cached_target_max")
+
     query = session.get("query")
     porsi = session.get("porsi")
-
-    if not query:
-        return redirect(url_for("home"))
+    target_min = session.get("target_min")
+    target_max = session.get("target_max")
 
     try:
         target_min = float(target_min)
@@ -199,93 +250,87 @@ def search():
         target_min = 0
         target_max = 9999
 
-    data_makanan = get_all_makanan()
-
-    filtered = filter_makanan_rule_based(
-        data_makanan, user, target_min, target_max, porsi
-    )
-
-    query_clean = query.lower().replace("-", " ").strip()
-
-    if filtered:
-        hasil = cbf_ranking(query_clean, filtered, top_n=5)
+    # Jika cache valid (query, porsi, target sama), gunakan cache
+    if (cached_hasil and cached_query == query and cached_porsi == porsi and
+        cached_target_min == target_min and cached_target_max == target_max):
+        hasil = cached_hasil
     else:
-        hasil = []
+        # Lakukan processing
+        data_makanan = get_all_makanan()
+        filtered = filter_makanan_rule_based(data_makanan, user, target_min, target_max, porsi)
+        query_clean = query.lower().replace("-", " ").strip()
+
+        if filtered:
+            hasil = cbf_ranking(query_clean, filtered, top_n=5)
+        else:
+            hasil = []
+
+        # Cache hasil
+        session["cached_hasil"] = hasil
+        session["cached_query"] = query
+        session["cached_porsi"] = porsi
+        session["cached_target_min"] = target_min
+        session["cached_target_max"] = target_max
 
     search_meta = []
     for idx, item in enumerate(hasil, start=1):
-        search_meta.append(
-            {
-                "id": item.get("id"),
-                "query": query,
-                "rank": idx,
-                "similarity": float(item.get("similarity", 0)),
-                "total_result": len(hasil),
-            }
+        search_meta.append({
+            "id": item.get("id"),
+            "query": query,
+            "rank": idx,
+            "similarity": float(item.get("similarity", 0)),
+            "total_result": len(hasil),
+        })
+
+        session["detail_search_meta"] = search_meta
+
+    # =============================
+    # AMBIL SEMUA LIKE USER
+    # DALAM 1 SESSION
+    # =============================
+    interaction_session_id = session.get("interaction_session_id")
+
+    liked_makanan_ids = set()
+
+    if interaction_session_id:
+
+        all_interactions = get_user_interactions_by_session(
+            user["id"],
+            interaction_session_id
         )
 
-    session["detail_search_meta"] = search_meta
+        liked_makanan_ids = {
+            int(i["makanan_id"])
+            for i in all_interactions
+        }
+
+    # =============================
+    # SET STATUS LIKE
+    # =============================
+    for item in hasil:
+        item["is_liked"] = item["id"] in liked_makanan_ids
 
     return render_template(
-        "search.html",
-        user=user,
-        query=query,
-        target_min=target_min,
-        target_max=target_max,
-        porsi=porsi,
-        hasil=hasil,
-    )
+    "search.html",
+    hasil=hasil,
+    query=query,
+    message=message,
+    user=user,
+    target_min=target_min,
+    target_max=target_max,
+    porsi=porsi
+)
 
 
 # =============================
 # DETAIL FOOD
 # =============================
-@app.route("/detail/<int:id>", methods=["GET", "POST"])
+@app.route("/detail/<int:id>")
 def detail(id):
 
     user = get_current_user()
     if not user:
         return redirect(url_for("login"))
-
-    message = None
-    interaction_liked = session.get("interaction_liked", False)
-
-    if request.method == "POST":
-        if interaction_liked:
-            message = "Anda sudah like 1 makanan pada sesi pencarian ini."
-        else:
-            query = request.form.get("query") or ""
-            rank = request.form.get("rank")
-            similarity = request.form.get("similarity")
-            total_result = request.form.get("total_result")
-
-            interaction_session_id = session.get("interaction_session_id")
-            if not interaction_session_id:
-                interaction_session_id = str(uuid.uuid4())
-                session["interaction_session_id"] = interaction_session_id
-
-            interaction_data = {
-                "user_id": user["id"],
-                "makanan_id": id,
-                "query": query,
-                "rank": int(rank) if rank else None,
-                "similarity": float(similarity) if similarity else None,
-                "total_result": int(total_result) if total_result else None,
-                "session_id": interaction_session_id,
-            }
-
-            try:
-                insert_user_interaction(interaction_data)
-                session["interaction_liked"] = True
-                interaction_liked = True
-                message = "None"
-            except Exception as e:
-                if "duplicate key value violates unique constraint" in str(e) or "23505" in str(e):
-                    session["interaction_liked"] = True
-                    interaction_liked = True
-                    message = "Anda sudah like 1 makanan pada sesi pencarian ini."
-                else:
-                    raise
 
     # ambil data makanan
     data = get_makanan_by_id(id)
@@ -294,13 +339,6 @@ def detail(id):
         return "Makanan tidak ditemukan"
 
     makanan = data[0]
-
-    # cek apakah menu ini sudah dilike dalam sesi ini
-    interaction_session_id = session.get("interaction_session_id")
-    is_liked = False
-    if interaction_session_id:
-        existing_interaction = get_user_interaction(user["id"], id, interaction_session_id)
-        is_liked = bool(existing_interaction)
 
     search_meta = session.get("detail_search_meta", [])
     detail_meta = next((item for item in search_meta if item.get("id") == id), None)
@@ -316,20 +354,14 @@ def detail(id):
         similarity = ""
         total_result = ""
 
-    liked = interaction_liked or bool(request.args.get("liked"))
-
     return render_template(
         "detail.html",
         user=user,
         makanan=makanan,
-        liked=liked,
-        interaction_liked=interaction_liked,
-        is_liked=is_liked,
         query=query,
         rank=rank,
         similarity=similarity,
         total_result=total_result,
-        message=message,
     )
 
 
