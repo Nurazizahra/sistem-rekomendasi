@@ -19,3 +19,19 @@ def get_user_interactions_by_session(user_id, session_id):
         .execute()
 
     return response.data
+
+# =============================
+# AMBIL SEMUA INTERAKSI
+# UNTUK EVALUASI
+# =============================
+def get_all_user_interactions():
+
+    response = (
+        supabase
+        .table("user_interaksi")
+        .select("*")
+        .order("created_at")
+        .execute()
+    )
+
+    return response.data
