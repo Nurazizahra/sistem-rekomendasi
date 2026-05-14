@@ -237,11 +237,14 @@ def search():
     cached_porsi = session.get("cached_porsi")
     cached_target_min = session.get("cached_target_min")
     cached_target_max = session.get("cached_target_max")
+    cached_alergi = session.get("cached_alergi")
 
     query = session.get("query")
     porsi = session.get("porsi")
     target_min = session.get("target_min")
     target_max = session.get("target_max")
+
+    current_alergi = user.get("alergi", "")
 
     try:
         target_min = float(target_min)
@@ -251,8 +254,14 @@ def search():
         target_max = 9999
 
     # Jika cache valid (query, porsi, target sama), gunakan cache
-    if (cached_hasil and cached_query == query and cached_porsi == porsi and
-        cached_target_min == target_min and cached_target_max == target_max):
+    if (
+        cached_hasil
+        and cached_query == query
+        and cached_porsi == porsi
+        and cached_target_min == target_min
+        and cached_target_max == target_max
+        and cached_alergi == current_alergi
+    ):
         hasil = cached_hasil
     else:
         # Lakukan processing
@@ -271,6 +280,7 @@ def search():
         session["cached_porsi"] = porsi
         session["cached_target_min"] = target_min
         session["cached_target_max"] = target_max
+        session["cached_alergi"] = current_alergi
 
     search_meta = []
     for idx, item in enumerate(hasil, start=1):
